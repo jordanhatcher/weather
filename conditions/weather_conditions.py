@@ -3,8 +3,9 @@ weather_conditions
 """
 
 import logging
+from apscheduler.triggers.cron import CronTrigger
 from pubsub import pub
-from ..condition import Condition
+from ....condition import Condition
 
 LOGGER = logging.getLogger(__name__)
 
@@ -12,9 +13,9 @@ CONDITION_CLASS_NAME = 'WeatherConditions'
 
 class WeatherConditions(Condition):
     """
-    PipeConditions
+    WeatherConditions
 
-    Conditions for reading from named pipes
+    Conditions for reading weather data
     """
 
     def __init__(self, scheduler, schedule=None):
@@ -23,7 +24,7 @@ class WeatherConditions(Condition):
         """
 
         Condition.__init__(self, scheduler, schedule)
-        pub.subscribe(self.evaluate, 'messages.pipe_node')
+        scheduler.add_job(self.evaluate, CronTrigger.from_crontab(schedule), [None])
         LOGGER.debug('Initialized')
 
     def evaluate(self, msg):
@@ -32,6 +33,4 @@ class WeatherConditions(Condition):
         """
 
         LOGGER.info('Evaluating')
-
-        if 'stop' in msg['content']:
-            pub.sendMessage('system.stop')
+        pub.sendMessage('weather.update', msg=None)
