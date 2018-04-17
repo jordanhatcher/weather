@@ -18,16 +18,16 @@ class WeatherConditions(Condition):
     Conditions for reading weather data
     """
 
-    def __init__(self, scheduler, schedule=None):
+    def __init__(self, scheduler, schedule='0 * * * *'):
         """
         Constructor
         """
 
         Condition.__init__(self, scheduler, schedule)
-        scheduler.add_job(self.evaluate, CronTrigger.from_crontab(schedule), [None])
+        scheduler.add_job(self.evaluate, CronTrigger.from_crontab(schedule))
         LOGGER.debug('Initialized')
 
-    def evaluate(self, msg):
+    def evaluate(self, msg=None):
         """
         Handler for receiving messages
         """

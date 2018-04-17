@@ -28,10 +28,11 @@ class WeatherNode(Node):
         Constructor
         """
         Node.__init__(self, label, state, config)
+        self.state.add_states(self.label, ['weather'])
 
-        pubsub.subscribe(self.update_state, f'{self.label}.update')
+        pub.subscribe(self.update_state, f'{self.label}.update')
 
-    def update_state(self):
+    def update_state(self, msg=None):
         """
         Updates the node state. Fetches data from openweathermap and
         stores that data in the state object for the node.
@@ -48,10 +49,25 @@ class WeatherNode(Node):
 
         city = self.config['default_city']
         country = self.config['default_country']
+        units = self.config['units']
         api_key = self.config['api_key']
-        url = f'{OPEN_WEATHER_MAP_URL}?q={city},{country}&appid={api_key}'
+        url = f'{OPEN_WEATHER_MAP_URL}?q={city},{country}&units={units}&appid={api_key}'
 
         response = urllib.request.urlopen(url)
         text_response = response.read().decode('utf-8')
-        weather = json.loads(text_response)['main']
-        weather['temp'] = weather['temp'] - 273.15 # Kelvin to Celcius
+        dict_response = json.loads(text_response)
+
+        description = dict_response['weather'][0]
+        temp_pressure_humidity = dict_response['main']
+        wind = {'wind': dict_response['wind']}
+
+        weather = {**description, **temp_pressure_humidity, **wind}
+
+        if 'rain' in dict_response:
+            weather['rain'] = dict_response['rain']
+        if 'snow' in dict_response:
+            weather['snow'] = dict_response['snow']
+
+        LOGGER.debug(weather)
+        weather = {'weather': weather}
+        return weather
