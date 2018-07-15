@@ -28,8 +28,6 @@ class WeatherNode(Node):
         Constructor
         """
         Node.__init__(self, label, state, config)
-        self.state.add_states(self.label, ['weather'])
-
         pub.subscribe(self.update_weather, f'{self.label}.update')
 
     def update_weather(self, msg=None):
