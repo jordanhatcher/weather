@@ -30,27 +30,23 @@ class WeatherNode(Node):
         Node.__init__(self, label, state, config)
         self.state.add_states(self.label, ['weather'])
 
-        pub.subscribe(self.update_state, f'{self.label}.update')
+        pub.subscribe(self.update_weather, f'{self.label}.update')
 
-    def update_state(self, msg=None):
-        """
-        Updates the node state. Fetches data from openweathermap and
-        stores that data in the state object for the node.
-        """
-
-        weather = self._get_weather()
-        self.state.update_states(self.label, **weather)
-
-    def _get_weather(self):
+    def update_weather(self, msg=None):
         """
         Helper function to send a request to openweathermap to get the
         weather for the default city.
         """
 
-        city = self.config['default_city']
-        country = self.config['default_country']
-        units = self.config['units']
-        api_key = self.config['api_key']
+        try:
+            city = self.config['default_city']
+            country = self.config['default_country']
+            units = self.config['units']
+            api_key = self.config['api_key']
+        except KeyError as e:
+            LOGGER.debug('Missing key for weather node config')
+            raise e
+
         url = f'{OPEN_WEATHER_MAP_URL}?q={city},{country}&units={units}&appid={api_key}'
 
         response = urllib.request.urlopen(url)
@@ -59,7 +55,7 @@ class WeatherNode(Node):
 
         description = dict_response['weather'][0]
         temp_pressure_humidity = dict_response['main']
-        wind = {'wind': dict_response['wind']}
+        wind = dict_response['wind']
 
         weather = {**description, **temp_pressure_humidity, **wind}
 
@@ -69,5 +65,4 @@ class WeatherNode(Node):
             weather['snow'] = dict_response['snow']
 
         LOGGER.debug(weather)
-        weather = {'weather': weather}
-        return weather
+        self.state.update_state(self.label, weather)
