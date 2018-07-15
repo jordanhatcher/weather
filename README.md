@@ -15,8 +15,8 @@ automation system. In the `config.yml` file, add the following under `nodes:`
 weather:
   node: weather.weather_node
   config:
-    city: <YOUR_CITY>
-    country: <YOUR_COUNTRY>
+    default_city: <YOUR_CITY>
+    default_country: <YOUR_COUNTRY>
     units: <metric | imperial>
     api_key: <API_KEY>
 ```
