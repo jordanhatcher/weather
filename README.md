@@ -1,9 +1,9 @@
-#Weather
+# Weather
 
 This is a package for my automation system that provides an interface to
 OpenWeatherMap to get weather data.
 
-##Setup
+## Setup
 
 Before setting up this package, an OpenWeatherMap API key is needed. A free API
 key can be obtained [here](https://openweathermap.org/price).
