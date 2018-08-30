@@ -51,16 +51,28 @@ class WeatherNode(Node):
         text_response = response.read().decode('utf-8')
         dict_response = json.loads(text_response)
 
+        # transfrom API response into a key-value mapping
         description = dict_response['weather'][0]
         temp_pressure_humidity = dict_response['main']
         wind = dict_response['wind']
 
-        weather = {**description, **temp_pressure_humidity, **wind}
+        weather = {
+            'description': description['description'],
+            'current_temp': float(temp_pressure_humidity['temp']),
+            'pressure': float(temp_pressure_humidity['pressure']),
+            'humidity': float(temp_pressure_humidity['humidity']),
+            'min_temp': float(temp_pressure_humidity['temp_min']),
+            'max_temp': float(temp_pressure_humidity['temp_max']),
+            'wind_speed': float(wind['speed']),
+            'wind_direction': int(wind['deg']),
+            'rain_volume': 0.0,
+            'snow_volume': 0.0
+        }
 
         if 'rain' in dict_response:
-            weather['rain'] = dict_response['rain']
+            weather['rain_volume'] = float(dict_response['rain'])
         if 'snow' in dict_response:
-            weather['snow'] = dict_response['snow']
+            weather['snow_volume'] = float(dict_response['snow'])
 
         LOGGER.debug(weather)
         self.state.update_state(self.label, weather)
