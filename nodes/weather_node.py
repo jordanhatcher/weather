@@ -8,7 +8,7 @@ import json
 import logging
 import urllib.request
 from pubsub import pub
-from ....node import Node
+from node import Node
 
 LOGGER = logging.getLogger(__name__)
 

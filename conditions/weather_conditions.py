@@ -5,7 +5,7 @@ weather_conditions
 import logging
 from apscheduler.triggers.cron import CronTrigger
 from pubsub import pub
-from ....condition import Condition
+from condition import Condition
 
 LOGGER = logging.getLogger(__name__)
 
