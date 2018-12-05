@@ -13,7 +13,7 @@ automation system. In the `config.yml` file, add the following under `nodes:`
 
 ```yaml
 weather:
-  node: weather.weather_node
+  node_type: weather.weather_node
   config:
     default_city: <YOUR_CITY>
     default_country: <YOUR_COUNTRY>
